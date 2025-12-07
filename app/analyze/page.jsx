@@ -24,14 +24,15 @@ export default function AnalyzePage() {
     try {
       const priceToSend = formData.price ? parseFloat(formData.price) : null;
 
-      const response = await axios.post(
-        "http://localhost:8000/api/analyze",
-        {
-          product_name: formData.product,
-          price_idr: priceToSend,
-          unit: formData.unit
-        }
-      );
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/analyze`,
+      {
+        product_name: formData.product,
+        price_idr: priceToSend,
+        unit: formData.unit
+      }
+    );
+
 
       setResult(response.data);
       setIsPanelOpen(true);
@@ -48,13 +49,14 @@ export default function AnalyzePage() {
     if (!result) return;
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/email/draft",
-        {
-          product_name: result.meta.product,
-          target_country_code: countryCode
-        }
-      );
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/email/draft`,
+      {
+        product_name: result.meta.product,
+        target_country_code: countryCode
+      }
+    );
+
 
       setEmailData(response.data.data);
 
