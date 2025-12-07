@@ -7,12 +7,6 @@ import StaticMap from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-// Debug awal
-console.log(
-  "WEBGL SUPPORT?",
-  typeof window !== "undefined" ? window.WebGLRenderingContext : "NO WINDOW"
-);
-
 const INITIAL_VIEW_STATE = {
   longitude: 115,
   latitude: 0,
@@ -24,22 +18,9 @@ const INITIAL_VIEW_STATE = {
 export default function MapViz({ data }) {
   const [ready, setReady] = useState(false);
 
-  // STEP 1 – Debug apakah WebGL bisa dibuat
+  // Render DeckGL setelah browser siap
   useEffect(() => {
-    const canvas = document.createElement("canvas");
-    const gl =
-      canvas.getContext("webgl") ||
-      canvas.getContext("experimental-webgl");
-
-    console.log("GL CONTEXT?", gl);
-
-    if (gl) {
-      console.log("MAX_TEXTURE_SIZE =", gl.getParameter(gl.MAX_TEXTURE_SIZE));
-    } else {
-      console.log("WEBGL FAILED TO INITIALIZE");
-    }
-
-    setReady(true); // <-- PENTING, BARU render DeckGL
+    Promise.resolve().then(() => setReady(true));
   }, []);
 
   if (!ready) return <div className="w-full h-screen bg-black" />;
@@ -64,22 +45,11 @@ export default function MapViz({ data }) {
       initialViewState={INITIAL_VIEW_STATE}
       layers={layers}
       glOptions={{ antialias: true }}
-      onWebGLInitialized={(gl) => {
-        console.log("DECKGL GL =", gl);
-      }}
     >
       <StaticMap
         mapLib={maplibregl}
         reuseMaps={true}
         mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
-        onLoad={(e) => {
-          try {
-            const gl = e.target.painter.context.gl;
-            console.log("MAPLIBRE GL =", gl);
-          } catch (err) {
-            console.log("MAPLIBRE LOAD ERROR", err);
-          }
-        }}
       />
     </DeckGL>
   );
